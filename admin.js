@@ -64,7 +64,7 @@ function startLiveUpdate() {
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td><strong>${data.displayName}</strong></td>
+                <td>${data.displayName}</td>
                 <td>${date}</td>
                 <td style="text-align:right;">
                     <button class="btn-edit" onclick="handleEdit('${id}', '${data.displayName}')">Edit</button>
@@ -91,3 +91,4 @@ window.handleEdit = async (id, currentName) => {
 };
 
 checkAuth();
+
