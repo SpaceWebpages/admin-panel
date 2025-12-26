@@ -18,6 +18,8 @@ const loginSection = document.getElementById('loginSection');
 const adminContent = document.getElementById('adminContent');
 const loginBtn = document.getElementById('loginBtn');
 const logoutBtn = document.getElementById('logoutBtn');
+const tableBody = document.getElementById('adminTableBody');
+const countSpan = document.getElementById('count');
 
 // Credentials
 const ADMIN_USER = "admin";
@@ -39,7 +41,7 @@ loginBtn.onclick = () => {
 // --- LOGOUT LOGIC ---
 logoutBtn.onclick = () => {
     sessionStorage.removeItem("isAdminLoggedIn");
-    location.reload(); // Refresh to show login screen
+    location.reload(); 
 };
 
 // --- AUTH CHECK ---
@@ -47,33 +49,55 @@ function checkAuth() {
     if (sessionStorage.getItem("isAdminLoggedIn") === "true") {
         loginSection.style.display = "none";
         adminContent.style.display = "block";
-        loadAllData();
+        fetchDataAjaxStyle(); // Trigger the "AJAX" fetch
     } else {
         loginSection.style.display = "block";
         adminContent.style.display = "none";
     }
 }
 
-// --- DATA FETCHING ---
-async function loadAllData() {
-    const tableBody = document.getElementById('adminTableBody');
-    const countSpan = document.getElementById('count');
+// --- AJAX-STYLE DATA FETCHING ---
+async function fetchDataAjaxStyle() {
+    // Show a loading state in the table
+    tableBody.innerHTML = '<tr><td colspan="2" style="text-align:center;">Loading database records...</td></tr>';
     
     try {
         const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
+        
+        // This is the "request" part
         const querySnapshot = await getDocs(q);
         
-        tableBody.innerHTML = '';
-        countSpan.innerText = querySnapshot.size;
-
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            const date = data.createdAt ? data.createdAt.toDate().toLocaleString() : "N/A";
-            tableBody.innerHTML += `<tr><td>${data.displayName}</td><td>${date}</td></tr>`;
-        });
+        // This is the "success" callback part
+        handleDataSuccess(querySnapshot);
+        
     } catch (error) {
-        console.error("Error:", error);
+        // This is the "error" callback part
+        console.error("AJAX Error:", error);
+        tableBody.innerHTML = '<tr><td colspan="2" style="color:red; text-align:center;">Failed to load data.</td></tr>';
     }
+}
+
+function handleDataSuccess(snapshot) {
+    tableBody.innerHTML = '';
+    countSpan.innerText = snapshot.size;
+
+    if (snapshot.empty) {
+        tableBody.innerHTML = '<tr><td colspan="2" style="text-align:center;">No students registered yet.</td></tr>';
+        return;
+    }
+
+    snapshot.forEach((doc) => {
+        const data = doc.data();
+        const date = data.createdAt ? data.createdAt.toDate().toLocaleString() : "N/A";
+        
+        // Construct the row
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><strong>${data.displayName}</strong></td>
+            <td>${date}</td>
+        `;
+        tableBody.appendChild(row);
+    });
 }
 
 // Initialize page state
