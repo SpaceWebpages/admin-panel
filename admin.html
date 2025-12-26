@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - VNHS</title>
+    <link rel="stylesheet" href="admin-style.css">
+</head>
+<body>
+
+    <div id="loginSection" class="admin-container">
+        <h1>Admin Login</h1>
+        <input type="text" id="loginUser" placeholder="Username">
+        <input type="password" id="loginPass" placeholder="Password">
+        <button id="loginBtn">Login</button>
+    </div>
+
+    <div id="adminContent" class="admin-container" style="display: none;">
+        <header style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h1>Admin Panel</h1>
+                <p>Total Registered: <span id="count">0</span></p>
+            </div>
+            <button id="logoutBtn">Logout</button>
+        </header>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Registration Date</th>
+                </tr>
+            </thead>
+            <tbody id="adminTableBody"></tbody>
+        </table>
+    </div>
+
+    <script type="module" src="admin.js"></script>
+</body>
+</html>
